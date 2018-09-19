@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageProjectUrl>https://github.com/chrishaly/DependencyInjection</PackageProjectUrl>
+    <Authors>Chris Hwang</Authors>
+    <Product />
+    <Company>Aolyn</Company>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>

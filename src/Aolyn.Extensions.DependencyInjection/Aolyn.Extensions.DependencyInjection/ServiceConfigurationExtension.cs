@@ -10,58 +10,24 @@ namespace Microsoft.Extensions.DependencyInjection
 {
 	public static class ServiceConfigurationExtension
 	{
-		public static IServiceCollection AddConfigType<T>(this IServiceCollection services)
+		/// <summary>
+		/// register all service of methods's return type, which methods with ServiceAttribute
+		/// </summary>
+		/// <typeparam name="T">configuration type, methods in type will be scan</typeparam>
+		/// <param name="services">DI container reigister collection</param>
+		/// <returns></returns>
+		public static IServiceCollection AddConfigurationType<T>(this IServiceCollection services)
 		{
-			return AddAutoConfiguration(services, typeof(T));
+			return AddConfigurationType(services, typeof(T));
 		}
 
 		/// <summary>
-		/// register all service type with ConfigurationAttribute or ServiceAttribute in assembly of T
+		/// register all service of methods's return type, which methods with ServiceAttribute
 		/// </summary>
-		/// <typeparam name="T">assemlby of T will be scan</typeparam>
-		/// <param name="services">service to add to</param>
+		/// <param name="services">DI container reigister collection</param>
+		/// <param name="type">configuration type, methods in type will be scan</param>
 		/// <returns></returns>
-		public static IServiceCollection AddAssembly<T>(this IServiceCollection services)
-		{
-			return services.AddAssembly(typeof(T).Assembly);
-		}
-
-		/// <summary>
-		/// register all service type with ConfigurationAttribute or ServiceAttribute in assembly
-		/// </summary>
-		/// <param name="assembly">assembly to scan</param>
-		/// <param name="services">service to add to</param>
-		/// <returns></returns>
-		public static IServiceCollection AddAssembly(this IServiceCollection services, Assembly assembly)
-		{
-			var types = assembly.GetTypes();
-			foreach (var type in types)
-			{
-				//var existDescriptor = services.FirstOrDefault(it => it.ServiceType == type);
-				//if (existDescriptor != null)
-				//{
-				//	continue;
-				//}
-
-				var attr = type.GetCustomAttributes<ConfigurationAttribute>().FirstOrDefault();
-				if (attr != null)
-				{
-					AddAutoConfiguration(services, type);
-					continue;
-				}
-
-				var serviceAttribute = type.GetCustomAttributes<ServiceAttribute>().FirstOrDefault();
-				if (serviceAttribute == null)
-					continue;
-
-				var desc = new ServiceDescriptor(serviceAttribute.ServiceType ?? type, type, serviceAttribute.Lifetime);
-				services.Add(desc);
-			}
-
-			return services;
-		}
-
-		public static IServiceCollection AddAutoConfiguration(this IServiceCollection services, Type type)
+		public static IServiceCollection AddConfigurationType(this IServiceCollection services, Type type)
 		{
 			services.AddSingleton(type);
 
@@ -113,6 +79,52 @@ namespace Microsoft.Extensions.DependencyInjection
 		public static object GetServiceInstance(IServiceProvider serviceProvider, Type type)
 		{
 			return serviceProvider.GetService(type);
+		}
+
+		/// <summary>
+		/// register all service type with ConfigurationAttribute or ServiceAttribute in assembly of T
+		/// </summary>
+		/// <typeparam name="T">assemlby of T will be scan</typeparam>
+		/// <param name="services">service to add to</param>
+		/// <returns></returns>
+		public static IServiceCollection AddConfigurationAssembly<T>(this IServiceCollection services)
+		{
+			return services.AddConfigurationAssembly(typeof(T).Assembly);
+		}
+
+		/// <summary>
+		/// register all service type with ConfigurationAttribute or ServiceAttribute in assembly
+		/// </summary>
+		/// <param name="assembly">assembly to scan</param>
+		/// <param name="services">service to add to</param>
+		/// <returns></returns>
+		public static IServiceCollection AddConfigurationAssembly(this IServiceCollection services, Assembly assembly)
+		{
+			var types = assembly.GetTypes();
+			foreach (var type in types)
+			{
+				//var existDescriptor = services.FirstOrDefault(it => it.ServiceType == type);
+				//if (existDescriptor != null)
+				//{
+				//	continue;
+				//}
+
+				var attr = type.GetCustomAttributes<ConfigurationAttribute>().FirstOrDefault();
+				if (attr != null)
+				{
+					AddConfigurationType(services, type);
+					continue;
+				}
+
+				var serviceAttribute = type.GetCustomAttributes<ServiceAttribute>().FirstOrDefault();
+				if (serviceAttribute == null)
+					continue;
+
+				var desc = new ServiceDescriptor(serviceAttribute.ServiceType ?? type, type, serviceAttribute.Lifetime);
+				services.Add(desc);
+			}
+
+			return services;
 		}
 	}
 }
