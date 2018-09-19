@@ -2,6 +2,7 @@
 
 This is a DependencyInjection utility tool used to auto register service to IServiceCollection.
 
+Package nuget link https://www.nuget.org/packages/Aolyn.Extensions.DependencyInjection/
 
 ##Quick start
 
